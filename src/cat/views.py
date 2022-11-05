@@ -2,6 +2,8 @@ from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Prefetch
+
 
 from . import models
 from . import serializers
@@ -26,7 +28,10 @@ class InventoryView(MixedSerializer, ModelViewSet):
     }
 
     def get_queryset(self):
-        queryset = models.Inventory.objects.filter(id=self.kwargs['id'])
+        item_qt = models.Item.objects.select_related('product', 'product__category')
+        queryset = models.Inventory.objects.prefetch_related(
+            Prefetch('item', queryset=item_qt)
+        ).filter(id=self.kwargs['id'])
         return queryset
 
 
@@ -41,3 +46,9 @@ class PhraseView(ListAPIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, ]
     filterset_fields = ["name", ]
+
+
+class CatView(ModelViewSet):
+    queryset = models.Cat.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.GetCatSerializer

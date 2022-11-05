@@ -92,3 +92,9 @@ class PhraseSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Phrase
         fields = ("id", "name", "text", "cat")
+
+
+class GetCatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Cat
+        fields = ('name', )
