@@ -7,7 +7,7 @@ from github import Github
 from django.conf import settings
 
 
-class Service:
+class TestService:
     def request(self, file, course_name):
         headers = {'Authorization': f"Bearer {os.environ.get('FASTAPI_TOKEN')}"}
         try:
@@ -36,3 +36,4 @@ class GitService(object):
 
 
 git_service = GitService()
+test_service = TestService()

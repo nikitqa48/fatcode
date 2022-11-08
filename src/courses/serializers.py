@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from . import models
 from .validators import StudentWorkValidator
-from .services import Service
+from .services import test_service
 
 from src.profiles.models import FatUser
 
@@ -154,13 +154,12 @@ class StudentWorkSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         work = models.StudentWork.objects.create(**validated_data, student=self.context['request'].user)
         file = work.create_testfile()
-        service = Service()
-        service.request(file, validated_data['lesson'].course.name)
-        if service.status_code == 200:
+        test_service.request(file, validated_data['lesson'].course.name)
+        if test_service.status_code == 200:
             if 'test_django exited with code 0' in service.content['result']['stdout']:
                 work.completed = True
                 return work
-            work.error = service.content['result']['stdout']
+            work.error = test_service.content['result']['stdout']
         return work
 
 
