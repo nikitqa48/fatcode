@@ -27,9 +27,8 @@ class TestService:
 
 class GitService(object):
     def __init__(self):
-        git = Github(settings.FATCODEADMIN_GIT_TOKEN)
-        self._user = git.get_user()
-        self.git = git
+        self.git = Github(settings.FATCODEADMIN_GIT_TOKEN)
+        self._user = self.git.get_user()
 
     def create_repo(self, name):
         self._user.create_repo(name, private=True)
@@ -37,3 +36,4 @@ class GitService(object):
 
 git_service = GitService()
 test_service = TestService()
+

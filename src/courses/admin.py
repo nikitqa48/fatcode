@@ -2,9 +2,9 @@ from django.contrib import admin
 from . import models
 
 
-class LessonTabInlines(admin.TabularInline):
-    model = models.Lesson
-    extra = 1
+# class LessonTabInlines(admin.TabularInline):
+#     model = models.Lesson
+#     extra = 1
 
 
 class QuizTabular(admin.TabularInline):
@@ -19,7 +19,6 @@ class CodeTabular(admin.TabularInline):
 
 @admin.register(models.Course)
 class CourseAdmin(admin.ModelAdmin):
-    inlines = [LessonTabInlines]
     list_display = ('name', 'author', 'mentor')
     ordering = ['published']
 
@@ -30,7 +29,7 @@ class CourseAdmin(admin.ModelAdmin):
 @admin.register(models.Lesson)
 class LessonAdmin(admin.ModelAdmin):
     inlines = [QuizTabular, CodeTabular]
-    list_display = ('id', 'course', 'lesson_type')
+    list_display = ('id', 'lesson_type')
 
     class Meta:
         fields = '__all__'

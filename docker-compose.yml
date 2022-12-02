@@ -3,7 +3,7 @@ version: "3"
 services:
 
   db:
-    image: postgres
+    image: postgres:14
     container_name: db_fatcode
     volumes:
       - db_fatcode_vol:/var/lib/postgresql/data
@@ -60,3 +60,4 @@ services:
 
 volumes:
   db_fatcode_vol:
+

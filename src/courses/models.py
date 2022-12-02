@@ -54,6 +54,17 @@ class Course(models.Model):
         return UserCourseThrough.objects.filter(course=self).count()
 
 
+class PartCourse(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='part')
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200)
+    description = models.TextField()
+    position = models.IntegerField()
+    instructor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
+    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
+
+
 class Lesson(models.Model):
     LESSON_CHOICE = (
         ('quiz', 'Квиз'),
@@ -70,7 +81,7 @@ class Lesson(models.Model):
     video_url = models.URLField(max_length=500, null=True, blank=True)
     published = models.DateField(auto_now_add=True)
     sorted = models.IntegerField(default=1)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
+    part_course = models.ForeignKey(PartCourse, on_delete=models.CASCADE, related_name='lessons', null=True, blank=True)
     slug = models.SlugField()
     description = models.TextField()
     test = models.FileField(upload_to='files/test/python/', null=True, blank=True)

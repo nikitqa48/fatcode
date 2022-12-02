@@ -99,7 +99,7 @@ class CourseSerializer(serializers.ModelSerializer):
     author = UserSerializer()
     tags = TagSerializer(many=True)
     category = CategorySerializer()
-    lessons = LessonListSerializer(many=True)
+    lessons = LessonListSerializer(many=True, required=False)
 
     class Meta:
         model = models.Course
@@ -156,7 +156,7 @@ class StudentWorkSerializer(serializers.ModelSerializer):
         file = work.create_testfile()
         test_service.request(file, validated_data['lesson'].course.name)
         if test_service.status_code == 200:
-            if 'test_django exited with code 0' in service.content['result']['stdout']:
+            if 'test_django exited with code 0' in test_service.content['result']['stdout']:
                 work.completed = True
                 return work
             work.error = test_service.content['result']['stdout']
@@ -172,3 +172,47 @@ class HelpUserSerializer(serializers.ModelSerializer):
         mentor = validated_data['lesson'].course.mentor
         student = self.context['request'].user
         return models.HelpUser.objects.create(mentor=mentor, student=student, **validated_data)
+
+
+class PartCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.PartCourse
+        fields = (
+            'name',
+            'description',
+            'position',
+            'instructor',
+        )
+
+
+class AdminCreateCourseSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True, required=False)
+    part = PartCourseSerializer(many=True, required=False)
+
+    class Meta:
+        model = models.Course
+        fields = (
+            'id',
+            'name',
+            'description',
+            'slug',
+            'view_count',
+            'published',
+            'updated',
+            'mentor',
+            'author',
+            'tags',
+            'category',
+            'part'
+        )
+
+    def create(self, validated_data):
+        nested_data = {'part', 'tags'}
+        data = {x: validated_data[x] for x in validated_data if x not in nested_data}
+        instance = models.Course.objects.create(**data)
+        if 'part' in validated_data:
+            x = {instance.part.create(**part) for part in validated_data.pop('part')}
+        if 'tags' in validated_data:
+            x = {instance.tags.create(**tag) for tag in validated_data.pop('tags')}
+        return instance
+
