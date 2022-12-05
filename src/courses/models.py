@@ -79,6 +79,7 @@ class Lesson(models.Model):
     viewed = models.IntegerField(default=0, editable=False)
     hint = models.TextField(null=True, blank=True)
     video_url = models.URLField(max_length=500, null=True, blank=True)
+    file_path = models.CharField(max_length=100, blank=True, null=True)
     published = models.DateField(auto_now_add=True)
     sorted = models.IntegerField(default=1)
     part_course = models.ForeignKey(PartCourse, on_delete=models.CASCADE, related_name='lessons', null=True, blank=True)
